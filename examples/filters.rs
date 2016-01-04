@@ -13,6 +13,7 @@ use rustful::filter::{FilterContext, ResponseFilter, ResponseAction, ContextFilt
 use rustful::response::Data;
 use rustful::StatusCode;
 use rustful::header::Headers;
+use rustful::header::ContentType;
 use rustful::context::{Uri, MaybeUtf8Owned};
 
 fn say_hello(mut context: Context, mut response: Response, format: &Format) {
@@ -24,8 +25,10 @@ fn say_hello(mut context: Context, mut response: Response, format: &Format) {
         false
     };
 
-    //Is the format supposed to be a JSON structure? Then set a variable name
+    //Is the format supposed to be a JSON structure? Then set a variable name/content type
     if let Format::Json = *format {
+        let mime = ContentType(content_type!(Application / Json; Charset = Utf8));
+        response.headers_mut().set(mime);
         response.filter_storage_mut().insert(JsonVar("message"));
         quote_msg = true;
     }
